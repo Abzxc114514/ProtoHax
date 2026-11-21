@@ -27,10 +27,14 @@ class ModuleAimAssist : CheatModule("AimAssist", CheatCategory.COMBAT) {
 	 */
 	private var triggerRangeValue by floatValue("TriggerRange", 20f, 1f..90f).visible { softLockValue }
 
-	private var randomValue by boolValue("Random", false)
-	private var randomPartValue by listValue("RandomPart", Part.values(), Part.HEAD).visible { randomValue }
 	/**
-	 * radius in blocks of the sphere the random aim point is picked from
+	 * body part the aim assist aims at
+	 */
+	private var aimPositionValue by listValue("AimPosition", AimPosition.values(), AimPosition.HEAD)
+
+	private var randomValue by boolValue("Random", false)
+	/**
+	 * radius in blocks of the random offset around the aim position
 	 */
 	private var randomDistanceValue by floatValue("RandomDistance", 0.3f, 0f..1f).visible { randomValue }
 
@@ -51,14 +55,13 @@ class ModuleAimAssist : CheatModule("AimAssist", CheatCategory.COMBAT) {
 		player.silentRotation = toRotation(player.vec3Position, aimPoint)
 	}
 
-	private fun anchorFor(target: EntityPlayer) =
-		if (randomValue) partPosition(target, randomPartValue) else target.vec3Position
+	private fun anchorFor(target: EntityPlayer) = partPosition(target, aimPositionValue)
 
-	private fun partPosition(target: EntityPlayer, part: Part): Vector3f {
+	private fun partPosition(target: EntityPlayer, part: AimPosition): Vector3f {
 		return when (part) {
-			Part.HEAD -> target.vec3Position
-			Part.BODY -> target.vec3PositionFeet.add(0f, 1f, 0f)
-			Part.FEET -> target.vec3PositionFeet
+			AimPosition.HEAD -> target.vec3Position
+			AimPosition.BODY -> target.vec3PositionFeet.add(0f, 1f, 0f)
+			AimPosition.FEET -> target.vec3PositionFeet
 		}
 	}
 
@@ -98,7 +101,7 @@ class ModuleAimAssist : CheatModule("AimAssist", CheatCategory.COMBAT) {
 
 	private fun lerp(a: Double, b: Double, t: Double) = a + (b - a) * t
 
-	private enum class Part(override val choiceName: String) : NamedChoice {
+	private enum class AimPosition(override val choiceName: String) : NamedChoice {
 		HEAD("Head"),
 		BODY("Body"),
 		FEET("Feet")
