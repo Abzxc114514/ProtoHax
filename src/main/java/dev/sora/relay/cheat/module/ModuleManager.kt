@@ -47,6 +47,7 @@ class ModuleManager(private val session: GameSession) {
 		registerModule(ModuleSpeed())
 		registerModule(ModuleGApple())
 		registerModule(ModuleAimAssist())
+		registerModule(ModuleAdvancedFly())
     }
 
 	inline fun <reified T : CheatModule> getModule(t: Class<T>): T {
